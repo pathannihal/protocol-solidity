@@ -5,7 +5,8 @@ pragma solidity ^0.8.0; // Bumped version
  * This contract has been copied from the MD1/Multicall repository.
  * @dev https://github.com/mds1/multicall/blob/ebd8b64457454fc10037b3a3ea858f9c08dad4d3/src/Multicall3.sol
  * @dev changelog: pragma solidity ^0.8.12 -> pragma solidity ^0.8.0
- **/
+ *
+ */
 
 /// @title Multicall3
 /// @notice Aggregate results from multiple function calls
@@ -49,7 +50,7 @@ contract Multicall3 {
         uint256 length = calls.length;
         returnData = new bytes[](length);
         Call calldata call;
-        for (uint256 i = 0; i < length; ) {
+        for (uint256 i = 0; i < length;) {
             bool success;
             call = calls[i];
             (success, returnData[i]) = call.target.call(call.callData);
@@ -73,7 +74,7 @@ contract Multicall3 {
         uint256 length = calls.length;
         returnData = new Result[](length);
         Call calldata call;
-        for (uint256 i = 0; i < length; ) {
+        for (uint256 i = 0; i < length;) {
             Result memory result = returnData[i];
             call = calls[i];
             (result.success, result.returnData) = call.target.call(call.callData);
@@ -93,11 +94,7 @@ contract Multicall3 {
     function tryBlockAndAggregate(bool requireSuccess, Call[] calldata calls)
         public
         payable
-        returns (
-            uint256 blockNumber,
-            bytes32 blockHash,
-            Result[] memory returnData
-        )
+        returns (uint256 blockNumber, bytes32 blockHash, Result[] memory returnData)
     {
         blockNumber = block.number;
         blockHash = blockhash(block.number);
@@ -113,11 +110,7 @@ contract Multicall3 {
     function blockAndAggregate(Call[] calldata calls)
         public
         payable
-        returns (
-            uint256 blockNumber,
-            bytes32 blockHash,
-            Result[] memory returnData
-        )
+        returns (uint256 blockNumber, bytes32 blockHash, Result[] memory returnData)
     {
         (blockNumber, blockHash, returnData) = tryBlockAndAggregate(true, calls);
     }
@@ -129,7 +122,7 @@ contract Multicall3 {
         uint256 length = calls.length;
         returnData = new Result[](length);
         Call3 calldata calli;
-        for (uint256 i = 0; i < length; ) {
+        for (uint256 i = 0; i < length;) {
             Result memory result = returnData[i];
             calli = calls[i];
             (result.success, result.returnData) = calli.target.call(calli.callData);
@@ -163,7 +156,7 @@ contract Multicall3 {
         uint256 length = calls.length;
         returnData = new Result[](length);
         Call3Value calldata calli;
-        for (uint256 i = 0; i < length; ) {
+        for (uint256 i = 0; i < length;) {
             Result memory result = returnData[i];
             calli = calls[i];
             uint256 val = calli.value;
@@ -172,7 +165,7 @@ contract Multicall3 {
             unchecked {
                 valAccumulator += val;
             }
-            (result.success, result.returnData) = calli.target.call{ value: val }(calli.callData);
+            (result.success, result.returnData) = calli.target.call{value: val}(calli.callData);
             assembly {
                 // Revert if the call fails and failure is not allowed
                 // `allowFailure := calldataload(add(calli, 0x20))` and `success := mload(result)`

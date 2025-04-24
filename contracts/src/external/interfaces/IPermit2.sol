@@ -27,10 +27,5 @@ interface IPermit2 {
         bytes calldata signature
     ) external;
 
-    function transferFrom(
-        address from,
-        address to,
-        uint160 amount,
-        address token
-    ) external;
+    function transferFrom(address from, address to, uint160 amount, address token) external;
 }

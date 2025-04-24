@@ -3,9 +3,11 @@ pragma solidity ^0.8.0;
 
 // Contains structs and functions used by SpokePool contracts to facilitate universal settlement.
 interface V3SpokePoolInterface {
-    /**************************************
+    /**
+     *
      *              ENUMS                 *
-     **************************************/
+     *
+     */
 
     // Fill status tracks on-chain state of deposit, uniquely identified by relayHash.
     enum FillStatus {
@@ -27,9 +29,11 @@ interface V3SpokePoolInterface {
     // Slow fills are requested via requestSlowFill and executed by executeSlowRelayLeaf after a bundle containing
     // the slow fill is validated.
 
-    /**************************************
+    /**
+     *
      *              STRUCTS               *
-     **************************************/
+     *
+     */
 
     // This struct represents the data to fully specify a **unique** relay submitted on this chain.
     // This data is hashed with the chainId() and saved by the SpokePool to prevent collisions and protect against
@@ -126,10 +130,11 @@ interface V3SpokePoolInterface {
         bytes message;
     }
 
-    /**************************************
+    /**
+     *
      *              EVENTS                *
-     **************************************/
-
+     *
+     */
     event FundsDeposited(
         bytes32 inputToken,
         bytes32 outputToken,
@@ -189,16 +194,14 @@ interface V3SpokePoolInterface {
     );
 
     event ClaimedRelayerRefund(
-        bytes32 indexed l2TokenAddress,
-        bytes32 indexed refundAddress,
-        uint256 amount,
-        address indexed caller
+        bytes32 indexed l2TokenAddress, bytes32 indexed refundAddress, uint256 amount, address indexed caller
     );
 
-    /**************************************
+    /**
+     *
      *              FUNCTIONS             *
-     **************************************/
-
+     *
+     */
     function deposit(
         bytes32 depositor,
         bytes32 recipient,
@@ -291,11 +294,7 @@ interface V3SpokePoolInterface {
         bytes calldata depositorSignature
     ) external;
 
-    function fillRelay(
-        V3RelayData calldata relayData,
-        uint256 repaymentChainId,
-        bytes32 repaymentAddress
-    ) external;
+    function fillRelay(V3RelayData calldata relayData, uint256 repaymentChainId, bytes32 repaymentAddress) external;
 
     function fillV3Relay(V3RelayDataLegacy calldata relayData, uint256 repaymentChainId) external;
 
@@ -311,18 +310,16 @@ interface V3SpokePoolInterface {
 
     function requestSlowFill(V3RelayData calldata relayData) external;
 
-    function executeSlowRelayLeaf(
-        V3SlowFill calldata slowFillLeaf,
-        uint32 rootBundleId,
-        bytes32[] calldata proof
-    ) external;
+    function executeSlowRelayLeaf(V3SlowFill calldata slowFillLeaf, uint32 rootBundleId, bytes32[] calldata proof)
+        external;
 
     function claimRelayerRefund(bytes32 l2TokenAddress, bytes32 refundAddress) external;
 
-    /**************************************
+    /**
+     *
      *              ERRORS                *
-     **************************************/
-
+     *
+     */
     error DisabledRoute();
     error InvalidQuoteTimestamp();
     error InvalidFillDeadline();
@@ -343,9 +340,11 @@ interface V3SpokePoolInterface {
     error InsufficientSpokePoolBalanceToExecuteLeaf();
     error NoRelayerRefundToClaim();
 
-    /**************************************
+    /**
+     *
      *             LEGACY EVENTS          *
-     **************************************/
+     *
+     */
 
     // Note: these events are unused, but included in the ABI for ease of migration.
     event V3FundsDeposited(

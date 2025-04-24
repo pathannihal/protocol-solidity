@@ -2,9 +2,11 @@
 pragma solidity ^0.8.0;
 
 library Bytes32ToAddress {
-    /**************************************
+    /**
+     *
      *              ERRORS                *
-     **************************************/
+     *
+     */
     error InvalidBytes32();
 
     function toAddress(bytes32 _bytes32) internal pure returns (address) {

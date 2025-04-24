@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "../external/interfaces/IPermit2.sol";
-import { GaslessCrossChainOrder } from "./ERC7683.sol";
+import {GaslessCrossChainOrder} from "./ERC7683.sol";
 
 // Data unique to every CrossChainOrder settled on Across
 struct AcrossOrderData {
@@ -34,8 +34,7 @@ bytes constant ACROSS_ORDER_DATA_TYPE = abi.encodePacked(
     "uint256 outputAmount,",
     "uint256 destinationChainId,",
     "bytes32 recipient,",
-    "address exclusiveRelayer,"
-    "uint256 depositNonce,",
+    "address exclusiveRelayer," "uint256 depositNonce,",
     "uint32 exclusivityPeriod,",
     "bytes message)"
 );
@@ -48,67 +47,63 @@ bytes32 constant ACROSS_ORDER_DATA_TYPE_HASH = keccak256(ACROSS_ORDER_DATA_TYPE)
  * @custom:security-contact bugs@across.to
  */
 library ERC7683Permit2Lib {
-    bytes internal constant GASLESS_CROSS_CHAIN_ORDER_TYPE =
-        abi.encodePacked(
-            "GaslessCrossChainOrder(",
-            "address originSettler,",
-            "address user,",
-            "uint256 nonce,",
-            "uint256 originChainId,",
-            "uint32 openDeadline,",
-            "uint32 fillDeadline,",
-            "bytes32 orderDataType,",
-            "AcrossOrderData orderData)"
-        );
+    bytes internal constant GASLESS_CROSS_CHAIN_ORDER_TYPE = abi.encodePacked(
+        "GaslessCrossChainOrder(",
+        "address originSettler,",
+        "address user,",
+        "uint256 nonce,",
+        "uint256 originChainId,",
+        "uint32 openDeadline,",
+        "uint32 fillDeadline,",
+        "bytes32 orderDataType,",
+        "AcrossOrderData orderData)"
+    );
 
     bytes internal constant GASLESS_CROSS_CHAIN_ORDER_EIP712_TYPE =
         abi.encodePacked(GASLESS_CROSS_CHAIN_ORDER_TYPE, ACROSS_ORDER_DATA_TYPE);
     bytes32 internal constant GASLESS_CROSS_CHAIN_ORDER_TYPE_HASH = keccak256(GASLESS_CROSS_CHAIN_ORDER_EIP712_TYPE);
 
     string private constant TOKEN_PERMISSIONS_TYPE = "TokenPermissions(address token,uint256 amount)";
-    string internal constant PERMIT2_ORDER_TYPE =
-        string(
-            abi.encodePacked(
-                "GaslessCrossChainOrder witness)",
-                ACROSS_ORDER_DATA_TYPE,
-                GASLESS_CROSS_CHAIN_ORDER_TYPE,
-                TOKEN_PERMISSIONS_TYPE
-            )
-        );
+    string internal constant PERMIT2_ORDER_TYPE = string(
+        abi.encodePacked(
+            "GaslessCrossChainOrder witness)",
+            ACROSS_ORDER_DATA_TYPE,
+            GASLESS_CROSS_CHAIN_ORDER_TYPE,
+            TOKEN_PERMISSIONS_TYPE
+        )
+    );
 
     // Hashes an order to get an order hash. Needed for permit2.
     function hashOrder(GaslessCrossChainOrder memory order, bytes32 orderDataHash) internal pure returns (bytes32) {
-        return
-            keccak256(
-                abi.encode(
-                    GASLESS_CROSS_CHAIN_ORDER_TYPE_HASH,
-                    order.originSettler,
-                    order.user,
-                    order.nonce,
-                    order.originChainId,
-                    order.openDeadline,
-                    order.fillDeadline,
-                    order.orderDataType,
-                    orderDataHash
-                )
-            );
+        return keccak256(
+            abi.encode(
+                GASLESS_CROSS_CHAIN_ORDER_TYPE_HASH,
+                order.originSettler,
+                order.user,
+                order.nonce,
+                order.originChainId,
+                order.openDeadline,
+                order.fillDeadline,
+                order.orderDataType,
+                orderDataHash
+            )
+        );
     }
 
     function hashOrderData(AcrossOrderData memory orderData) internal pure returns (bytes32) {
-        return
-            keccak256(
-                abi.encode(
-                    ACROSS_ORDER_DATA_TYPE_HASH,
-                    orderData.inputToken,
-                    orderData.inputAmount,
-                    orderData.outputToken,
-                    orderData.outputAmount,
-                    orderData.destinationChainId,
-                    orderData.recipient,
-                    orderData.exclusiveRelayer,
-                    orderData.exclusivityPeriod,
-                    keccak256(orderData.message)
-                )
-            );
+        return keccak256(
+            abi.encode(
+                ACROSS_ORDER_DATA_TYPE_HASH,
+                orderData.inputToken,
+                orderData.inputAmount,
+                orderData.outputToken,
+                orderData.outputAmount,
+                orderData.destinationChainId,
+                orderData.recipient,
+                orderData.exclusiveRelayer,
+                orderData.exclusivityPeriod,
+                keccak256(orderData.message)
+            )
+        );
     }
 }
