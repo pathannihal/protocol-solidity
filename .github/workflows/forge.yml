@@ -1,0 +1,53 @@
+name: forge-tests
+
+on:
+  push:
+    branches: [ 'main' ]
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [ '**' ]
+    paths-ignore:
+      - 'README.md'
+  
+  workflow_dispatch:
+
+jobs:
+  forge-tests:
+    runs-on: ubuntu-latest
+    if: github.ref != 'refs/heads/main' && github.event.pull_request.draft == false
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          
+      - name: "Install Foundry"
+        uses: "foundry-rs/foundry-toolchain@v1"
+
+      - name: Show Forge version
+        run: |
+          cd ./contracts
+          forge --version
+
+      - name: Run Forge fmt
+        run: |
+          cd ./contracts
+          forge fmt --check
+        id: fmt
+
+      - name: Run Forge build
+        run: |
+          cd ./contracts
+          forge build --sizes
+        id: build
+
+      - name: "Run Forge tests"
+        run: |
+          cd ./contracts
+          forge test -vvv
+        id: test
+
+      - name: "Add test summary"
+        run: |
+          echo "## Tests result" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Passed" >> $GITHUB_STEP_SUMMARY
