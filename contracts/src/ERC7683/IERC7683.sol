@@ -1,8 +1,9 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
-pragma solidity ^0.8.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity >=0.8.25;
 
 /// @title GaslessCrossChainOrder CrossChainOrder type
-/// @notice Standard order struct to be signed by users, disseminated to fillers, and submitted to origin settler contracts
+/// @notice Standard order struct to be signed by users, disseminated to fillers, and submitted to origin settler
+/// contracts by fillers
 struct GaslessCrossChainOrder {
     /// @dev The contract address that the order is meant to be settled by.
     /// Fillers send this order to this contract address on the origin chain
@@ -27,7 +28,8 @@ struct GaslessCrossChainOrder {
 }
 
 /// @title OnchainCrossChainOrder CrossChainOrder type
-/// @notice Standard order struct for user-opened orders, where the user is the msg.sender.
+/// @notice Standard order struct for user-opened orders, where the user is the one submitting the order creation
+/// transaction
 struct OnchainCrossChainOrder {
     /// @dev The timestamp by which the order must be filled on the destination chain
     uint32 fillDeadline;
@@ -42,7 +44,8 @@ struct OnchainCrossChainOrder {
 /// @title ResolvedCrossChainOrder type
 /// @notice An implementation-generic representation of an order intended for filler consumption
 /// @dev Defines all requirements for filling an order by unbundling the implementation-specific orderData.
-/// @dev Intended to improve integration generalization by allowing fillers to compute the exact input and output information of any order
+/// @dev Intended to improve integration generalization by allowing fillers to compute the exact input and output
+/// information of any order
 struct ResolvedCrossChainOrder {
     /// @dev The address of the user who is initiating the transfer
     address user;
@@ -54,19 +57,26 @@ struct ResolvedCrossChainOrder {
     uint32 fillDeadline;
     /// @dev The unique identifier for this order within this settlement system
     bytes32 orderId;
-    /// @dev The max outputs that the filler will send. It's possible the actual amount depends on the state of the destination
-    ///      chain (destination dutch auction, for instance), so these outputs should be considered a cap on filler liabilities.
+    /// @dev The max outputs that the filler will send. It's possible the actual amount depends on the state of the
+    /// destination
+    ///      chain (destination dutch auction, for instance), so these outputs should be considered a cap on filler
+    /// liabilities.
     Output[] maxSpent;
-    /// @dev The minimum outputs that must to be given to the filler as part of order settlement. Similar to maxSpent, it's possible
-    ///      that special order types may not be able to guarantee the exact amount at open time, so this should be considered
-    ///      a floor on filler receipts.
+    /// @dev The minimum outputs that must be given to the filler as part of order settlement. Similar to maxSpent, it's
+    /// possible
+    ///      that special order types may not be able to guarantee the exact amount at open time, so this should be
+    /// considered
+    ///      a floor on filler receipts. Setting the `recipient` of an `Output` to address(0) indicates that the filler
+    /// is not
+    ///      known when creating this order.
     Output[] minReceived;
-    /// @dev Each instruction in this array is parameterizes a single leg of the fill. This provides the filler with the information
+    /// @dev Each instruction in this array is parameterizes a single leg of the fill. This provides the filler with the
+    /// information
     ///      necessary to perform the fill on the destination(s).
     FillInstruction[] fillInstructions;
 }
 
-/// @notice Tokens that must be receive for a valid order fulfillment
+/// @notice Tokens that must be received for a valid order fulfillment
 struct Output {
     /// @dev The address of the ERC20 token on the destination chain
     /// @dev address(0) used as a sentinel for the native token
@@ -83,9 +93,9 @@ struct Output {
 /// @notice Instructions to parameterize each leg of the fill
 /// @dev Provides all the origin-generated information required to produce a valid fill leg
 struct FillInstruction {
-    /// @dev The contract address that the order is meant to be settled by
-    uint64 destinationChainId;
-    /// @dev The contract address that the order is meant to be filled on
+    /// @dev The chain that this instruction is intended to be filled on
+    uint256 destinationChainId;
+    /// @dev The contract address that the instruction is intended to be filled on
     bytes32 destinationSettler;
     /// @dev The data generated on the origin chain needed by the destinationSettler to process the fill
     bytes originData;
@@ -105,21 +115,28 @@ interface IOriginSettler {
     /// @param order The GaslessCrossChainOrder definition
     /// @param signature The user's signature over the order
     /// @param originFillerData Any filler-defined data required by the settler
-    function openFor(GaslessCrossChainOrder calldata order, bytes calldata signature, bytes calldata originFillerData)
+    function openFor(
+        GaslessCrossChainOrder calldata order,
+        bytes calldata signature,
+        bytes calldata originFillerData
+    )
         external;
 
     /// @notice Opens a cross-chain order
     /// @dev To be called by the user
     /// @dev This method must emit the Open event
     /// @param order The OnchainCrossChainOrder definition
-    function open(OnchainCrossChainOrder calldata order) external;
+    function open(OnchainCrossChainOrder calldata order) external payable;
 
     /// @notice Resolves a specific GaslessCrossChainOrder into a generic ResolvedCrossChainOrder
     /// @dev Intended to improve standardized integration of various order types and settlement contracts
     /// @param order The GaslessCrossChainOrder definition
     /// @param originFillerData Any filler-defined data required by the settler
     /// @return ResolvedCrossChainOrder hydrated order data including the inputs and outputs of the order
-    function resolveFor(GaslessCrossChainOrder calldata order, bytes calldata originFillerData)
+    function resolveFor(
+        GaslessCrossChainOrder calldata order,
+        bytes calldata originFillerData
+    )
         external
         view
         returns (ResolvedCrossChainOrder memory);
@@ -138,5 +155,5 @@ interface IDestinationSettler {
     /// @param orderId Unique order identifier for this order
     /// @param originData Data emitted on the origin to parameterize the fill
     /// @param fillerData Data provided by the filler to inform the fill or express their preferences
-    function fill(bytes32 orderId, bytes calldata originData, bytes calldata fillerData) external;
+    function fill(bytes32 orderId, bytes calldata originData, bytes calldata fillerData) external payable;
 }
