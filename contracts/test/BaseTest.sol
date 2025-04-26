@@ -316,8 +316,7 @@ contract BaseTest is Test, DeployPermit2 {
     }
 
     function _orderDataById(bytes32 orderId) internal view returns (bytes memory orderData) {
-        (,orderData) =
-            abi.decode(_base7683.openOrders(orderId), (bytes32, bytes));
+        (, orderData) = abi.decode(_base7683.openOrders(orderId), (bytes32, bytes));
     }
 
     function _assertOpenOrder(

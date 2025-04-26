@@ -9,7 +9,6 @@ import { GasRouter } from "@hyperlane-xyz/client/GasRouter.sol";
 
 import { Hyperlane7683 } from "../src/Hyperlane7683.sol";
 
-
 /// @dev See the Solidity Scripting tutorial: https://book.getfoundry.sh/tutorials/solidity-scripting
 contract EnrollRouter is Script {
     function run() public {
@@ -25,10 +24,10 @@ contract EnrollRouter is Script {
         bytes32[] memory _routers = new bytes32[](domains.length);
         GasRouter.GasRouterConfig[] memory gasConfigs = new GasRouter.GasRouterConfig[](domains.length);
 
-        for (uint i = 0; i < domains.length; i++) {
-          _routers[i] = TypeCasts.addressToBytes32(routers[i]);
-          _domains[i] = uint32(domains[i]);
-          gasConfigs[i] = GasRouter.GasRouterConfig(_domains[i], gasDomains[i]);
+        for (uint256 i = 0; i < domains.length; i++) {
+            _routers[i] = TypeCasts.addressToBytes32(routers[i]);
+            _domains[i] = uint32(domains[i]);
+            gasConfigs[i] = GasRouter.GasRouterConfig(_domains[i], gasDomains[i]);
         }
 
         vm.startBroadcast(deployerPrivateKey);

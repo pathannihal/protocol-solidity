@@ -22,7 +22,6 @@ contract Polymer7683 is BasicSwap7683, Ownable {
     uint256 public immutable localChainId;
     mapping(uint256 => address) public destinationContracts;
 
-
     // ============ Events ============
     /**
      * @notice Event emitted when a destination contract is updated
@@ -48,11 +47,7 @@ contract Polymer7683 is BasicSwap7683, Ownable {
      * @param _permit2 The address of the permit2 contract
      * @param _localChainId The chain ID of the chain this contract is deployed on
      */
-    constructor(
-        ICrossL2ProverV2 _prover,
-        address _permit2,
-        uint256 _localChainId
-    ) BasicSwap7683(_permit2) {
+    constructor(ICrossL2ProverV2 _prover, address _permit2, uint256 _localChainId) BasicSwap7683(_permit2) {
         prover = _prover;
         localChainId = _localChainId;
     }
@@ -75,7 +70,7 @@ contract Polymer7683 is BasicSwap7683, Ownable {
         (
             uint32 provenChainId,
             address emitter,
-            ,  // topics
+            , // topics
             bytes memory data
         ) = prover.validateEvent(eventProof);
 
@@ -87,14 +82,12 @@ contract Polymer7683 is BasicSwap7683, Ownable {
         if (emitter != expectedEmitter) revert InvalidEmitter();
 
         // Decode data from the Filled event format
-        (bytes32 eventOrderId, bytes memory originData, bytes memory fillerData) = abi.decode(data, (bytes32, bytes, bytes));
+        (bytes32 eventOrderId, bytes memory originData, bytes memory fillerData) =
+            abi.decode(data, (bytes32, bytes, bytes));
 
         // Process settlement with the message origin, sender, order ID, and receiver
         _handleSettleOrder(
-            provenChainId,
-            TypeCasts.addressToBytes32(emitter),
-            eventOrderId,
-            abi.decode(fillerData, (bytes32))
+            provenChainId, TypeCasts.addressToBytes32(emitter), eventOrderId, abi.decode(fillerData, (bytes32))
         );
 
         // _handleSettleOrder checks eligibility with
@@ -114,7 +107,7 @@ contract Polymer7683 is BasicSwap7683, Ownable {
         (
             uint32 provenChainId,
             address emitter,
-            ,  // topics
+            , // topics
             bytes memory data
         ) = prover.validateEvent(eventProof);
 
@@ -137,12 +130,8 @@ contract Polymer7683 is BasicSwap7683, Ownable {
         if (!found) revert InvalidEventData();
 
         // Process refund with message origin, sender, and order ID
-        _handleRefundOrder(
-            provenChainId,
-            TypeCasts.addressToBytes32(emitter),
-            orderId
-        );
-        
+        _handleRefundOrder(provenChainId, TypeCasts.addressToBytes32(emitter), orderId);
+
         // Check if order was successfully refunded
         if (orderStatus[orderId] != REFUNDED) revert RefundFailed();
     }
@@ -159,7 +148,10 @@ contract Polymer7683 is BasicSwap7683, Ownable {
         uint32 _originDomain,
         bytes32[] memory _orderIds,
         bytes[] memory _ordersFillerData
-    ) internal override {
+    )
+        internal
+        override
+    {
         // No-op as the Filled event is already emitted in Base7683's fill method
     }
 
@@ -168,10 +160,7 @@ contract Polymer7683 is BasicSwap7683, Ownable {
      * @param _originDomain The domain to which the refund message is sent
      * @param _orderIds The IDs of the orders to refund
      */
-    function _dispatchRefund(
-        uint32 _originDomain,
-        bytes32[] memory _orderIds
-    ) internal override {
+    function _dispatchRefund(uint32 _originDomain, bytes32[] memory _orderIds) internal override {
         // No-op as Refund event is already emitted in Base7683's refund method
     }
 
@@ -182,5 +171,4 @@ contract Polymer7683 is BasicSwap7683, Ownable {
     function _localDomain() internal view override returns (uint32) {
         return uint32(localChainId);
     }
-
 }

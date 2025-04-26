@@ -35,11 +35,11 @@ contract DeployHyperlane7683 is Script {
         address routerImpl = deployImplementation();
         TransparentUpgradeableProxy proxy = deployProxy(routerImpl, address(proxyAdmin));
 
-        for (uint i = 0; i < domains.length; i++) {
-          routers[i] = TypeCasts.addressToBytes32(address(proxy));
-          _domains[i] = uint32(domains[i]);
-          // amount is based on gas report from tests multiply 2
-          gasConfigs[i] = GasRouter.GasRouterConfig(_domains[i], 1070688);
+        for (uint256 i = 0; i < domains.length; i++) {
+            routers[i] = TypeCasts.addressToBytes32(address(proxy));
+            _domains[i] = uint32(domains[i]);
+            // amount is based on gas report from tests multiply 2
+            gasConfigs[i] = GasRouter.GasRouterConfig(_domains[i], 1_070_688);
         }
 
         Hyperlane7683(address(proxy)).enrollRemoteRouters(_domains, routers);
@@ -57,7 +57,7 @@ contract DeployHyperlane7683 is Script {
     function deployProxyAdmin() internal returns (ProxyAdmin proxyAdmin) {
         string memory ROUTER_SALT = vm.envString("HYPERLANE7683_SALT");
         address proxyAdminOwner = vm.envOr("PROXY_ADMIN_OWNER", address(0));
-        proxyAdmin = new OwnableProxyAdmin{salt: keccak256(abi.encode(ROUTER_SALT))}(proxyAdminOwner);
+        proxyAdmin = new OwnableProxyAdmin{ salt: keccak256(abi.encode(ROUTER_SALT)) }(proxyAdminOwner);
     }
 
     function deployImplementation() internal returns (address routerImpl) {
@@ -66,7 +66,7 @@ contract DeployHyperlane7683 is Script {
         string memory ROUTER_SALT = vm.envString("HYPERLANE7683_SALT");
         address mailbox = vm.envAddress("MAILBOX");
         address permit2 = vm.envAddress("PERMIT2");
-        bytes32 salt = keccak256(abi.encodePacked("impl",ROUTER_SALT, vm.addr(deployerPrivateKey)));
+        bytes32 salt = keccak256(abi.encodePacked("impl", ROUTER_SALT, vm.addr(deployerPrivateKey)));
 
         bytes memory routerCreation = type(Hyperlane7683).creationCode;
         bytes memory routerBytecode = abi.encodePacked(routerCreation, abi.encode(mailbox, permit2));
@@ -83,14 +83,15 @@ contract DeployHyperlane7683 is Script {
         bytes32 salt = keccak256(abi.encodePacked("proxy", ROUTER_SALT, vm.addr(deployerPrivateKey)));
 
         bytes memory proxyCreation = type(TransparentUpgradeableProxy).creationCode;
-        bytes memory proxyBytecode = abi.encodePacked(proxyCreation, abi.encode(
-          routerImpl,
-          proxyAdmin,
-          abi.encodeWithSelector(Hyperlane7683.initialize.selector, address(0), address(0), owner)
-        ));
-
-        proxy = TransparentUpgradeableProxy(
-          payable(ICreateX(createX).deployCreate3(salt, proxyBytecode))
+        bytes memory proxyBytecode = abi.encodePacked(
+            proxyCreation,
+            abi.encode(
+                routerImpl,
+                proxyAdmin,
+                abi.encodeWithSelector(Hyperlane7683.initialize.selector, address(0), address(0), owner)
+            )
         );
+
+        proxy = TransparentUpgradeableProxy(payable(ICreateX(createX).deployCreate3(salt, proxyBytecode)));
     }
 }

@@ -62,7 +62,10 @@ contract BasicSwap7683ForTest is BasicSwap7683 {
         _refundOrders(_orders, _orderIds);
     }
 
-    function resolveOrder(GaslessCrossChainOrder memory order, bytes calldata _dummy)
+    function resolveOrder(
+        GaslessCrossChainOrder memory order,
+        bytes calldata _dummy
+    )
         public
         view
         returns (ResolvedCrossChainOrder memory, bytes32 orderId, uint256 nonce)
@@ -97,25 +100,14 @@ contract BasicSwap7683ForTest is BasicSwap7683 {
         bytes32 _messageSender,
         bytes32 _orderId,
         bytes32 _receiver
-    ) public {
-        _handleSettleOrder(
-            _messageOrigin,
-            _messageSender,
-            _orderId,
-            _receiver
-        );
+    )
+        public
+    {
+        _handleSettleOrder(_messageOrigin, _messageSender, _orderId, _receiver);
     }
 
-    function handleRefundOrder(
-        uint32 _messageOrigin,
-        bytes32 _messageSender,
-        bytes32 _orderId
-    ) public {
-        _handleRefundOrder(
-            _messageOrigin,
-            _messageSender,
-            _orderId
-        );
+    function handleRefundOrder(uint32 _messageOrigin, bytes32 _messageSender, bytes32 _orderId) public {
+        _handleRefundOrder(_messageOrigin, _messageSender, _orderId);
     }
 
     function setOrderOpened(bytes32 _orderId, OrderData memory orderData) public {
@@ -301,10 +293,7 @@ contract BasicSwap7683Test is BaseTest {
         emit Settled(orderId, karpincho);
 
         baseSwap.handleSettleOrder(
-            destination,
-            counterpart.addressToBytes32(),
-            orderId,
-            TypeCasts.addressToBytes32(karpincho)
+            destination, counterpart.addressToBytes32(), orderId, TypeCasts.addressToBytes32(karpincho)
         );
 
         uint256[] memory balancesAfter = _balances(inputToken);
@@ -331,10 +320,7 @@ contract BasicSwap7683Test is BaseTest {
         emit Settled(orderId, karpincho);
 
         baseSwap.handleSettleOrder(
-            destination,
-            counterpart.addressToBytes32(),
-            orderId,
-            TypeCasts.addressToBytes32(karpincho)
+            destination, counterpart.addressToBytes32(), orderId, TypeCasts.addressToBytes32(karpincho)
         );
 
         uint256[] memory balancesAfter = _balances();
@@ -353,10 +339,7 @@ contract BasicSwap7683Test is BaseTest {
         uint256[] memory balancesBefore = _balances(inputToken);
 
         baseSwap.handleSettleOrder(
-            destination,
-            counterpart.addressToBytes32(),
-            orderId,
-            TypeCasts.addressToBytes32(karpincho)
+            destination, counterpart.addressToBytes32(), orderId, TypeCasts.addressToBytes32(karpincho)
         );
 
         uint256[] memory balancesAfter = _balances(inputToken);
@@ -375,10 +358,7 @@ contract BasicSwap7683Test is BaseTest {
         uint256[] memory balancesBefore = _balances(inputToken);
 
         baseSwap.handleSettleOrder(
-            wrongMsgOrigin,
-            counterpart.addressToBytes32(),
-            orderId,
-            TypeCasts.addressToBytes32(karpincho)
+            wrongMsgOrigin, counterpart.addressToBytes32(), orderId, TypeCasts.addressToBytes32(karpincho)
         );
 
         uint256[] memory balancesAfter = _balances(inputToken);
@@ -396,12 +376,7 @@ contract BasicSwap7683Test is BaseTest {
 
         uint256[] memory balancesBefore = _balances(inputToken);
 
-        baseSwap.handleSettleOrder(
-            destination,
-            wrongMsgSender,
-            orderId,
-            TypeCasts.addressToBytes32(karpincho)
-        );
+        baseSwap.handleSettleOrder(destination, wrongMsgSender, orderId, TypeCasts.addressToBytes32(karpincho));
 
         uint256[] memory balancesAfter = _balances(inputToken);
 
@@ -424,11 +399,7 @@ contract BasicSwap7683Test is BaseTest {
         vm.expectEmit(false, false, false, true);
         emit Refunded(orderId, kakaroto);
 
-        baseSwap.handleRefundOrder(
-            destination,
-            counterpart.addressToBytes32(),
-            orderId
-        );
+        baseSwap.handleRefundOrder(destination, counterpart.addressToBytes32(), orderId);
 
         uint256[] memory balancesAfter = _balances(inputToken);
 
@@ -453,11 +424,7 @@ contract BasicSwap7683Test is BaseTest {
         vm.expectEmit(false, false, false, true);
         emit Refunded(orderId, kakaroto);
 
-        baseSwap.handleRefundOrder(
-            destination,
-            counterpart.addressToBytes32(),
-            orderId
-        );
+        baseSwap.handleRefundOrder(destination, counterpart.addressToBytes32(), orderId);
 
         uint256[] memory balancesAfter = _balances();
 
@@ -475,11 +442,7 @@ contract BasicSwap7683Test is BaseTest {
 
         uint256[] memory balancesBefore = _balances(inputToken);
 
-        baseSwap.handleRefundOrder(
-            destination,
-            counterpart.addressToBytes32(),
-            orderId
-        );
+        baseSwap.handleRefundOrder(destination, counterpart.addressToBytes32(), orderId);
 
         uint256[] memory balancesAfter = _balances(inputToken);
 
@@ -497,11 +460,7 @@ contract BasicSwap7683Test is BaseTest {
 
         uint256[] memory balancesBefore = _balances(inputToken);
 
-        baseSwap.handleRefundOrder(
-            wrongMsgOrigin,
-            counterpart.addressToBytes32(),
-            orderId
-        );
+        baseSwap.handleRefundOrder(wrongMsgOrigin, counterpart.addressToBytes32(), orderId);
 
         uint256[] memory balancesAfter = _balances(inputToken);
 
@@ -519,11 +478,7 @@ contract BasicSwap7683Test is BaseTest {
 
         uint256[] memory balancesBefore = _balances(inputToken);
 
-        baseSwap.handleRefundOrder(
-            destination,
-            wrongMsgSender,
-            orderId
-        );
+        baseSwap.handleRefundOrder(destination, wrongMsgSender, orderId);
 
         uint256[] memory balancesAfter = _balances(inputToken);
 

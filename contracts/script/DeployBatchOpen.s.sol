@@ -10,12 +10,11 @@ import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { Hyperlane7683 } from "../src/Hyperlane7683.sol";
 import { OrderData, OrderEncoder } from "../src/libs/OrderEncoder.sol";
 
-import {
-    OnchainCrossChainOrder
-} from "../src/ERC7683/IERC7683.sol";
+import { OnchainCrossChainOrder } from "../src/ERC7683/IERC7683.sol";
 
-contract BatchOpen  {
+contract BatchOpen {
     Hyperlane7683 public router;
+
     constructor(address _router) {
         router = Hyperlane7683(_router);
     }

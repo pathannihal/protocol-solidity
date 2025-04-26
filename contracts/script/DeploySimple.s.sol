@@ -40,10 +40,10 @@ contract DeploySimple is Script {
         address routerImpl = deployImplementation();
         TransparentUpgradeableProxy proxy = deployProxy(routerImpl, address(proxyAdmin));
 
-        for (uint i = 0; i < domains.length; i++) {
-          _routers[i] = TypeCasts.addressToBytes32(routers[i]);
-          _domains[i] = uint32(domains[i]);
-          gasConfigs[i] = GasRouter.GasRouterConfig(_domains[i], gasDomains[i]);
+        for (uint256 i = 0; i < domains.length; i++) {
+            _routers[i] = TypeCasts.addressToBytes32(routers[i]);
+            _domains[i] = uint32(domains[i]);
+            gasConfigs[i] = GasRouter.GasRouterConfig(_domains[i], gasDomains[i]);
         }
 
         Hyperlane7683(address(proxy)).enrollRemoteRouters(_domains, _routers);
@@ -78,9 +78,9 @@ contract DeploySimple is Script {
         address initialOwner = vm.addr(deployerPrivateKey);
 
         proxy = new TransparentUpgradeableProxy(
-          routerImpl,
-          proxyAdmin,
-          abi.encodeWithSelector(Hyperlane7683.initialize.selector, address(0), address(0), initialOwner)
+            routerImpl,
+            proxyAdmin,
+            abi.encodeWithSelector(Hyperlane7683.initialize.selector, address(0), address(0), initialOwner)
         );
     }
 }

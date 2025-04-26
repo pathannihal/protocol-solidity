@@ -19,12 +19,12 @@ import { Hyperlane7683 } from "../src/Hyperlane7683.sol";
 import { Hyperlane7683Message } from "../src/libs/Hyperlane7683Message.sol";
 
 contract Hyperlane7683ForTest is Hyperlane7683 {
-    uint32[] public  refundedMessageOrigin;
+    uint32[] public refundedMessageOrigin;
     bytes32[] public refundedMessageSender;
     bytes32[] public refundedOrderId;
     bytes32[] public settledOrderId;
     bytes32[] public settledOrderReceiver;
-    uint32[] public  settledMessageOrigin;
+    uint32[] public settledMessageOrigin;
     bytes32[] public settledMessageSender;
 
     constructor(address _mailbox, address permitt2) Hyperlane7683(_mailbox, permitt2) { }
@@ -49,18 +49,17 @@ contract Hyperlane7683ForTest is Hyperlane7683 {
         bytes32 _messageSender,
         bytes32 _orderId,
         bytes32 _receiver
-    ) internal override {
+    )
+        internal
+        override
+    {
         settledMessageOrigin.push(_messageOrigin);
         settledMessageSender.push(_messageSender);
         settledOrderId.push(_orderId);
         settledOrderReceiver.push(_receiver);
     }
 
-    function _handleRefundOrder(
-        uint32 _messageOrigin,
-        bytes32 _messageSender,
-        bytes32 _orderId
-    ) internal override {
+    function _handleRefundOrder(uint32 _messageOrigin, bytes32 _messageSender, bytes32 _orderId) internal override {
         refundedMessageOrigin.push(_messageOrigin);
         refundedMessageSender.push(_messageSender);
         refundedOrderId.push(_orderId);

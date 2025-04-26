@@ -6,13 +6,10 @@ import { console2 } from "forge-std/console2.sol";
 
 import { TypeCasts } from "@hyperlane-xyz/libs/TypeCasts.sol";
 
-import {
-    OnchainCrossChainOrder
-} from "../src/ERC7683/IERC7683.sol";
+import { OnchainCrossChainOrder } from "../src/ERC7683/IERC7683.sol";
 
 import { Hyperlane7683 } from "../src/Hyperlane7683.sol";
 import { OrderEncoder } from "../src/libs/OrderEncoder.sol";
-
 
 /// @dev See the Solidity Scripting tutorial: https://book.getfoundry.sh/tutorials/solidity-scripting
 contract RefundOrder is Script {
@@ -33,7 +30,7 @@ contract RefundOrder is Script {
 
         uint256 quote = Hyperlane7683(router).quoteGasPayment(orderOrigin);
 
-        Hyperlane7683(router).refund{value: quote}(orders);
+        Hyperlane7683(router).refund{ value: quote }(orders);
 
         vm.stopBroadcast();
     }

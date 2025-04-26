@@ -144,11 +144,11 @@ abstract contract BasicSwap7683 is Base7683 {
         bytes32 _messageSender,
         bytes32 _orderId,
         bytes32 _receiver
-    ) internal virtual {
-        (
-            bool isEligible,
-            OrderData memory orderData
-        ) = _checkOrderEligibility(_messageOrigin, _messageSender, _orderId);
+    )
+        internal
+        virtual
+    {
+        (bool isEligible, OrderData memory orderData) = _checkOrderEligibility(_messageOrigin, _messageSender, _orderId);
 
         if (!isEligible) return;
 
@@ -170,10 +170,7 @@ abstract contract BasicSwap7683 is Base7683 {
      * @param _orderId The ID of the order to refund.
      */
     function _handleRefundOrder(uint32 _messageOrigin, bytes32 _messageSender, bytes32 _orderId) internal virtual {
-        (
-            bool isEligible,
-            OrderData memory orderData
-        ) = _checkOrderEligibility(_messageOrigin, _messageSender, _orderId);
+        (bool isEligible, OrderData memory orderData) = _checkOrderEligibility(_messageOrigin, _messageSender, _orderId);
 
         if (!isEligible) return;
 
@@ -188,40 +185,45 @@ abstract contract BasicSwap7683 is Base7683 {
     }
 
     /**
-    * @notice Checks if order is eligible for settlement or refund .
-    * @dev Order must be OPENED and the message was sent from the appropriated chain and contract.
-    * @param _messageOrigin The origin domain of the message.
-    * @param _messageSender The sender identifier of the message.
-    * @param _orderId The unique identifier of the order.
-    * @return A boolean indicating if the order is valid, and the decoded OrderData structure.
-    */
+     * @notice Checks if order is eligible for settlement or refund .
+     * @dev Order must be OPENED and the message was sent from the appropriated chain and contract.
+     * @param _messageOrigin The origin domain of the message.
+     * @param _messageSender The sender identifier of the message.
+     * @param _orderId The unique identifier of the order.
+     * @return A boolean indicating if the order is valid, and the decoded OrderData structure.
+     */
     function _checkOrderEligibility(
         uint32 _messageOrigin,
         bytes32 _messageSender,
         bytes32 _orderId
-    ) internal virtual returns (bool, OrderData memory) {
+    )
+        internal
+        virtual
+        returns (bool, OrderData memory)
+    {
         OrderData memory orderData;
 
         // check if the order is opened to ensure it belongs to this domain, skip otherwise
         if (orderStatus[_orderId] != OPENED) return (false, orderData);
 
-        (,bytes memory _orderData) = abi.decode(openOrders[_orderId], (bytes32, bytes));
+        (, bytes memory _orderData) = abi.decode(openOrders[_orderId], (bytes32, bytes));
         orderData = OrderEncoder.decode(_orderData);
 
-        if (orderData.destinationDomain != _messageOrigin || orderData.destinationSettler != _messageSender)
+        if (orderData.destinationDomain != _messageOrigin || orderData.destinationSettler != _messageSender) {
             return (false, orderData);
+        }
 
         return (true, orderData);
     }
 
     /**
-    * @notice Transfers tokens or ETH out of the contract.
-    * @dev If _token is the zero address, transfers ETH using a safe method; otherwise, performs an ERC20 token
-    * transfer.
-    * @param _token The address of the token to transfer (use address(0) for ETH).
-    * @param _to The recipient address.
-    * @param _amount The amount of tokens or ETH to transfer.
-    */
+     * @notice Transfers tokens or ETH out of the contract.
+     * @dev If _token is the zero address, transfers ETH using a safe method; otherwise, performs an ERC20 token
+     * transfer.
+     * @param _token The address of the token to transfer (use address(0) for ETH).
+     * @param _to The recipient address.
+     * @param _amount The amount of tokens or ETH to transfer.
+     */
     function _transferTokenOut(address _token, address _to, uint256 _amount) internal {
         if (_token == address(0)) {
             Address.sendValue(payable(_to), _amount);
@@ -268,7 +270,10 @@ abstract contract BasicSwap7683 is Base7683 {
      * @return The order ID.
      * @return The order nonce.
      */
-    function _resolveOrder(GaslessCrossChainOrder memory _order, bytes calldata)
+    function _resolveOrder(
+        GaslessCrossChainOrder memory _order,
+        bytes calldata
+    )
         internal
         view
         virtual

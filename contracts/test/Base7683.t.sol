@@ -72,7 +72,10 @@ contract Base7683ForTest is Base7683, StdCheats {
         counterpart = _counterpart;
     }
 
-    function _resolveOrder(GaslessCrossChainOrder memory order, bytes calldata)
+    function _resolveOrder(
+        GaslessCrossChainOrder memory order,
+        bytes calldata
+    )
         internal
         view
         override
