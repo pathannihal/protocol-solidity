@@ -29,7 +29,9 @@ jobs:
           cache: 'yarn'
 
       - name: Install dependencies
-        run: yarn install --production=false
+        run: |
+          cd ./contracts
+          yarn install --production=false
           
       - name: "Install Foundry"
         uses: "foundry-rs/foundry-toolchain@v1"
